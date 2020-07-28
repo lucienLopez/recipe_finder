@@ -37,3 +37,6 @@ yarn-debug.log*
 
 # RubyMine IDE conf
 .idea/*
+
+# dotenv files to load ENV variables
+/.env*
