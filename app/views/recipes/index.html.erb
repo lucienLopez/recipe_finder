@@ -1,0 +1,29 @@
+<%= form_with(url: search_recipes_path(format: :json), method: :get, id: 'recipes_search') do |f| %>
+  <%=
+    f.label(
+      :search_text,
+      'De quels ingrédients disposez-vous? (Séparez les ingrédients par un espace)'
+    )
+  %>
+  <br/>
+  <%= f.text_area :search_text %>
+  <br/>
+  <%= f.submit %>
+<% end %>
+
+<table>
+  <thead>
+  <tr>
+    <th>name</th>
+    <th>total_time</th>
+  </tr>
+  </thead>
+  <tbody id="recipes_tbody">
+  </tbody>
+</table>
+
+<% content_for :page_scripts do %>
+  $(document).ready(function() {
+    addRecipeSearchListeners();
+  });
+<% end %>
