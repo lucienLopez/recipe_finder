@@ -23,6 +23,8 @@ class Recipe < ApplicationRecord
 
   # look for recipes where all ingredients match at least one searched word
   def self.find_by_ingredients(search_string)
+    return all unless search_string.present?
+
     words_for_like = search_string.split(' ').map { |word| connection.quote("%#{word}%") }
 
     where.not(
