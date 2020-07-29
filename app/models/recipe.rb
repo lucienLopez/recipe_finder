@@ -31,8 +31,8 @@ class Recipe < ApplicationRecord
       Ingredient.where('ingredients.recipe_id = recipes.id')
         .where(
           <<-SQL
-            ingredients.description NOT LIKE
-            #{words_for_like.join(' AND ingredients.description NOT LIKE ')}
+            ingredients.description NOT ILIKE
+            #{words_for_like.join(' AND ingredients.description NOT ILIKE ')}
           SQL
         ).select(1).arel.exists
     )

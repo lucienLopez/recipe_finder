@@ -6,10 +6,16 @@ RSpec.describe Recipe, type: :model do
       let!(:expected_recipes) do
         [
           create(
-            :recipe, ingredient_descriptions: ['100g onion', 'one bowl rice', 'pork sausage']
+            :recipe,
+            ingredient_descriptions: [
+            'Salt', '100g onion', 'one bowl rice', 'pork sausage'
+            ]
           ),
           create(:recipe),
-          create(:recipe, ingredient_descriptions: ['100g onion', 'one bowl rice'])
+          create(
+            :recipe,
+            ingredient_descriptions: ['salt', '100g onion', 'one bowl rice']
+          )
         ]
       end
 
@@ -24,7 +30,7 @@ RSpec.describe Recipe, type: :model do
       end
 
       it 'filters correctly' do
-        expect(Recipe.find_by_ingredients('onion rice sausage')).to(
+        expect(Recipe.find_by_ingredients('onion rice sausage salt')).to(
           contain_exactly(*expected_recipes)
         )
       end
@@ -69,7 +75,7 @@ RSpec.describe Recipe, type: :model do
     end
   end
 
-  describe 'as_json' do
+  describe '#as_json' do
     let(:recipe) do
       create(
         :recipe, name: 'test_name', image: 'https://example.com', total_time: '1h'
