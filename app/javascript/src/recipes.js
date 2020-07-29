@@ -5,7 +5,11 @@ window.addRecipeSearchListeners = function(){
 
     $tbody.empty();
     for(var i =0; i < data.length; i++){
-      $tbody.append('<tr><td>' + data[i].name + '</td><td>' + data[i].total_time + '</td></tr>');
+      $tbody.append(
+        '<tr><td><a href="' + data[i].show_path +'">' + data[i].name + '</a></td><td>' + data[i].total_time +
+
+        '</td></tr>'
+      );
     }
   });
 }
