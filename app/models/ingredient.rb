@@ -18,4 +18,7 @@
 #
 class Ingredient < ApplicationRecord
   belongs_to :recipe
+
+  # TODO: find a way to parse description
+  # to distinguish quantity and actual ingredient
 end

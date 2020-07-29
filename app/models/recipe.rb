@@ -22,6 +22,8 @@ class Recipe < ApplicationRecord
   has_many :ingredients
 
   # look for recipes where all ingredients match at least one searched word
+  # TODO: either use a search by ingredient id (if we find a way to parse them)
+  # Or do a better search for full words (maybe use elasticsearch?)
   def self.find_by_ingredients(search_string)
     return all unless search_string.present?
 
