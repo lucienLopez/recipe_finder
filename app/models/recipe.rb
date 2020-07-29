@@ -37,4 +37,10 @@ class Recipe < ApplicationRecord
         ).select(1).arel.exists
     )
   end
+
+  def as_json(*)
+    super.slice('name', 'image', 'total_time').tap do |hash|
+      hash['show_path'] = Rails.application.routes.url_helpers.recipe_path(self)
+    end
+  end
 end

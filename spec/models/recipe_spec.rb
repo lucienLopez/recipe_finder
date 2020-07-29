@@ -68,4 +68,23 @@ RSpec.describe Recipe, type: :model do
       end
     end
   end
+
+  describe 'as_json' do
+    let(:recipe) do
+      create(
+        :recipe, name: 'test_name', image: 'https://example.com', total_time: '1h'
+      )
+    end
+
+    it 'serializes correctly' do
+      expect(recipe.as_json).to(
+        eq(
+          {
+            'name' => 'test_name', 'image' => 'https://example.com',
+            'total_time' => '1h', 'show_path' => "/recipes/#{recipe.id}"
+          }
+        )
+      )
+    end
+  end
 end
