@@ -24,11 +24,15 @@ class Recipe < ApplicationRecord
   # returns recipes ordered by percent of ingredients matching search_string
   # TODO: either use a search by ingredient id (if we find a way to parse them)
   # Or do a better search for full words (maybe use elasticsearch?)
+  # TODO: add ingredients_count in recipes so we don't need to use subquery for total_count
+  # TODO: list ingredients that everyone owns (salt, pepper...), ignore those in search
   def self.find_by_ingredients(search_string)
     return all unless search_string.present?
 
-    words_for_like = search_string.split(' ').map { |word| connection.quote("%#{word}%") }
-                       .join(' AND ingredients.description NOT ILIKE ')
+    # We remove any char not in French dictionary
+    words_for_query = connection.quote(
+      search_string.gsub(/[^a-zàâçéèêëîïôûùüÿñæœ ]/i, '').split(' ').join(' | ')
+    )
 
     query = <<-SQL
       SELECT *,
@@ -42,7 +46,7 @@ class Recipe < ApplicationRecord
                  SELECT COUNT(*)
                  FROM ingredients
                  WHERE ingredients.recipe_id = recipes.id
-                   AND ingredients.description NOT ILIKE #{words_for_like}
+                   AND NOT to_tsvector(ingredients.description) @@ to_tsquery(#{words_for_query})
                ) AS missing_count,
                (
                  SELECT COUNT(*)

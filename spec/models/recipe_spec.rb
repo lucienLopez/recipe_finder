@@ -12,8 +12,8 @@ RSpec.describe Recipe, type: :model do
         )
       end
 
-      let!(:no_match) do
-        create :recipe, ingredient_descriptions: ['100g something', 'one bowl else']
+      let!(:no_word_match) do
+        create :recipe, ingredient_descriptions: ['100g norice', 'one bowl onionword']
       end
 
       let!(:bad_match) do
@@ -32,7 +32,7 @@ RSpec.describe Recipe, type: :model do
 
       it 'orders recipes by matching ingredients percent' do
         expect(Recipe.find_by_ingredients('onion rice sausage salt').pluck(:id)).to(
-          eq([perfect_match.id, medium_match.id, bad_match.id, no_match.id])
+          eq([perfect_match.id, medium_match.id, bad_match.id, no_word_match.id])
         )
       end
     end
