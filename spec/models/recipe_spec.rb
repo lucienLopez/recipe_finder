@@ -3,62 +3,71 @@ require 'rails_helper'
 RSpec.describe Recipe, type: :model do
   describe '.find_by_ingredients' do
     context 'when passing multiple words' do
-      let!(:expected_recipes) do
-        [
-          create(
-            :recipe,
-            ingredient_descriptions: [
-            'Salt', '100g onion', 'one bowl rice', 'pork sausage'
-            ]
-          ),
-          create(:recipe),
-          create(
-            :recipe,
-            ingredient_descriptions: ['salt', '100g onion', 'one bowl rice']
-          )
-        ]
-      end
-
-      let!(:other_recipes) do
-        create :recipe, ingredient_descriptions: ['100g something', 'one bowl else']
+      let!(:perfect_match) do
         create(
           :recipe,
           ingredient_descriptions: [
-            '100g onion', 'one bowl rice', 'pork sausage', 'French fries'
+            'Salt', '100g onion', 'one bowl rice', 'pork sausage'
           ]
         )
       end
 
-      it 'filters correctly' do
-        expect(Recipe.find_by_ingredients('onion rice sausage salt')).to(
-          contain_exactly(*expected_recipes)
+      let!(:no_match) do
+        create :recipe, ingredient_descriptions: ['100g something', 'one bowl else']
+      end
+
+      let!(:bad_match) do
+        create(
+          :recipe,
+          ingredient_descriptions: ['salt', '100g something', 'one bowl else']
+        )
+      end
+
+      let!(:medium_match) do
+        create(
+          :recipe,
+          ingredient_descriptions: ['salt', '100g onion', 'one bowl rice', 'milk']
+        )
+      end
+
+      it 'orders recipes by matching ingredients percent' do
+        expect(Recipe.find_by_ingredients('onion rice sausage salt').pluck(:id)).to(
+          eq([perfect_match.id, medium_match.id, bad_match.id, no_match.id])
         )
       end
     end
 
     context 'when passing single word' do
-      let!(:expected_recipes) do
-        [
-          create(
-            :recipe, ingredient_descriptions: ['100g onion']
-          ),
-          create(:recipe),
-        ]
-      end
-
-      let!(:other_recipes) do
-        create :recipe, ingredient_descriptions: ['100g something', 'one bowl else']
+      let!(:perfect_match) do
         create(
           :recipe,
           ingredient_descriptions: [
-            '100g onion', 'one bowl rice', 'pork sausage', 'French fries'
+            '100g onion'
           ]
         )
       end
 
-      it 'filters correctly' do
-        expect(Recipe.find_by_ingredients('onion')).to(
-          contain_exactly(*expected_recipes)
+      let!(:no_match) do
+        create :recipe, ingredient_descriptions: ['100g something', 'one bowl else']
+      end
+
+      let!(:bad_match) do
+        create(
+          :recipe,
+          ingredient_descriptions: ['salt', '100g something', 'one small onion']
+        )
+      end
+
+      let!(:medium_match) do
+        create(
+          :recipe,
+          ingredient_descriptions: ['salt', 'Onion']
+        )
+      end
+
+      it 'orders recipes by matching ingredients percent' do
+        expect(Recipe.find_by_ingredients('onion').pluck(:id)).to(
+          eq([perfect_match.id, medium_match.id, bad_match.id, no_match.id])
         )
       end
     end
@@ -87,7 +96,8 @@ RSpec.describe Recipe, type: :model do
         eq(
           {
             'name' => 'test_name', 'image' => 'https://example.com',
-            'total_time' => '1h', 'show_path' => "/recipes/#{recipe.id}"
+            'total_time' => '1h', 'show_path' => "/recipes/#{recipe.id}",
+            'percent_match' => nil
           }
         )
       )
