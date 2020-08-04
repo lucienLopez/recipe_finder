@@ -12,5 +12,6 @@
 
 # Remaining work #
 
-* A better search system, either using actual parsing of ingredients (to distinguish ingredients and quantity, and be able to search by ids), or a better search system (maybe elasticsearch)
-* Make it more beautiful (literally no CSS used currently), add more info to recipe@show page
+* List ingredients owned by everybody to ignore them in search (add boolean to ingredient)
+* Add ingredients_count to recipes, to speed up search query
+* Make it more beautiful (literally no CSS used currently), add more info to recipes#show page
