@@ -28,24 +28,23 @@ RSpec.describe 'recipe', type: :request do
 
   describe 'search' do
     context 'when searching with multiple words' do
-      let!(:recipe) do
+      let!(:perfect_match) do
         create(
           :recipe, name: 'test_name', image: 'https://example.com', total_time: '1h',
           ingredient_descriptions: ['Salt', '100g onion']
         )
       end
 
-      let!(:other_recipes) do
-        create :recipe, ingredient_descriptions: ['100g something', 'one bowl else']
+      let!(:bad_match) do
         create(
-          :recipe,
+          :recipe, name: 'bad_match', image: 'https://example-2.com', total_time: '2h',
           ingredient_descriptions: [
             '100g onion', 'one bowl rice', 'pork sausage', 'French fries'
           ]
         )
       end
 
-      it 'returns matching recipes' do
+      it 'returns recipes ordered by matching ingredients percent' do
         get '/recipes/search', params: { format: :json, search_text: 'salt onion' }
 
         expect(response).to have_http_status(:ok)
@@ -54,7 +53,12 @@ RSpec.describe 'recipe', type: :request do
             [
               {
                 'name' => 'test_name', 'image' => 'https://example.com',
-                'total_time' => '1h', 'show_path' => "/recipes/#{recipe.id}"
+                'total_time' => '1h', 'show_path' => "/recipes/#{perfect_match.id}",
+                'percent_match' => '100.0'
+              }, {
+                'name' => 'bad_match', 'image' => 'https://example-2.com',
+                'total_time' => '2h', 'show_path' => "/recipes/#{bad_match.id}",
+                'percent_match' => '25.0'
               }
             ]
           )
